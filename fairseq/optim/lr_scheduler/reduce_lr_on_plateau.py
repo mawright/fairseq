@@ -30,7 +30,7 @@ class ReduceLROnPlateau(FairseqLRScheduler):
                 ' Consider --lr-scheduler=fixed instead.'
             )
         self.lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer.optimizer, patience=0, factor=args.lr_shrink,
+            self.optimizer.optimizer, patience=args.reduce_lr_patience, factor=args.lr_shrink,
             threshold=args.lr_threshold)
         warmup_end_lr = args.lr[0]
         """if no warm up, sets initial lr to be args.lr[0]"""
@@ -60,6 +60,8 @@ class ReduceLROnPlateau(FairseqLRScheduler):
                             help='warmup the learning rate linearly for the first N updates')
         parser.add_argument('--warmup-init-lr', default=-1, type=float, metavar='LR',
                             help='initial learning rate during warmup phase; default is args.lr')
+        parser.add_argument("--reduce-lr-patience", default=0, type=int, metavar='N',
+                            help='number of validation evals to wait before reducing LR')
         # fmt: on
 
     def state_dict(self):
