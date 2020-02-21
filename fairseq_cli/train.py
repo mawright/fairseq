@@ -33,8 +33,20 @@ logging.basicConfig(
 logger = logging.getLogger('fairseq_cli.train')
 
 
+def setup_file_logger(args):
+    log_file = os.path.join(args.save_dir, "log.out")
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(
+        logging.Formatter(
+            '%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'))
+    logger.addHandler(file_handler)
+
+
 def main(args, init_distributed=False):
     utils.import_user_module(args)
+
+    setup_file_logger(args)
 
     assert args.max_tokens is not None or args.max_sentences is not None, \
         'Must specify batch size either with --max-tokens or --max-sentences'
