@@ -24,6 +24,16 @@ from fairseq.meters import AverageMeter, StopwatchMeter, TimeMeter
 logger = logging.getLogger(__name__)
 
 
+def setup_file_logger(args, logger):
+    log_file = os.path.join(args.save_dir, "log.out")
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setFormatter(
+        logging.Formatter(
+            '%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'))
+    logger.addHandler(file_handler)
+
+
 def build_progress_bar(args, iterator, epoch=None, prefix=None, default='tqdm', no_progress_bar='none'):
     if args.log_format is None:
         args.log_format = no_progress_bar if args.no_progress_bar else default
@@ -50,6 +60,8 @@ def build_progress_bar(args, iterator, epoch=None, prefix=None, default='tqdm', 
             bar = fb_tbmf_wrapper(bar, args, args.log_interval)
         except ImportError:
             bar = tensorboard_log_wrapper(bar, args.tensorboard_logdir, args)
+
+    setup_file_logger(args, logger)
 
     return bar
 
